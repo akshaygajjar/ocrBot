@@ -18,7 +18,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import cloudmersive_ocr_api_client
 from cloudmersive_ocr_api_client.rest import ApiException
 
-KEY = "8c78f9d3-8848-48d3-86ba-a7aaf8ab9796"
+KEY = os.environ.get("KEY","")
 configuration = cloudmersive_ocr_api_client.Configuration()
 configuration.api_key['Apikey'] = KEY
 
@@ -28,7 +28,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-
+ 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
@@ -110,7 +110,8 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater("1011780131:AAFbABXZDSS1WXu-ng7EZqR_ajKrVGGfJxo", use_context=True)
+    BOT_TOKEN = os.environ.get("BOT_TOKEN","")
+    updater = Updater(BOT_TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
