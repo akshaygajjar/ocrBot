@@ -1,2 +1,2 @@
 python-telegram-bot
-cloudmersive_ocr_api_client
+pytesseract

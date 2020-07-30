@@ -11,16 +11,16 @@ Basic Echobot example, repeats messages.
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
+try:
+    from PIL import Image
+except ImportError:
+    import Image
+import pytesseract
 import logging
 import os
 from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import cloudmersive_ocr_api_client
-from cloudmersive_ocr_api_client.rest import ApiException
-
-KEY = os.environ.get("KEY","")
-configuration = cloudmersive_ocr_api_client.Configuration()
-configuration.api_key['Apikey'] = KEY
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -65,20 +65,17 @@ def convert_image(update, context):
     #we have access to the photo file till here 
     update.message.reply_text('Yeah ! I got image and Downloaded it !')
 
-    api_instance = cloudmersive_ocr_api_client.ImageOcrApi()
-    api_instance.api_client.configuration.api_key = {}
-    api_instance.api_client.configuration.api_key['Apikey'] = KEY
     try:
-        api_response = api_instance.image_ocr_post(filename)
-        confidence = api_response.mean_confidence_level
-        update.message.reply_text(f"Confidence : {confidence}\nExtracted Text is : {api_response.text_result}")
-        os.remove(filename)
-    except Exception as e: 
-        update.message.reply_text("Error Occured " + e)    
+       output = pytesseract.image_to_string(Image.open(filename))
+       update.message.reply_text(output)
+       os.remove(filename)
+    except Exception as e:
+        update.message.reply_text(e)
         try:
             os.remove(filename)
         except Exception:
             pass
+
 
 def convert_file(update, context):
     """Convert image file into text(Iamge as a file)"""
@@ -90,28 +87,27 @@ def convert_file(update, context):
     #we have access to the photo file till here 
     update.message.reply_text('Yeah ! I got image and Downloaded it !')
 
-    api_instance = cloudmersive_ocr_api_client.ImageOcrApi()
-    api_instance.api_client.configuration.api_key = {}
-    api_instance.api_client.configuration.api_key['Apikey'] = KEY
     try:
-        api_response = api_instance.image_ocr_post(file)
-        confidence = api_response.mean_confidence_level
-        update.message.reply_text(f"Confidence : {confidence}\nExtracted Text is : {api_response.text_result}")
-        os.remove(file)
-    except Exception as e: 
-        update.message.reply_text("Error Occured " + e)    
+       output = pytesseract.image_to_string(Image.open(file))
+       update.message.reply_text(output)
+       os.remove(file)
+    except Exception as e:
+        update.message.reply_text(e)
         try:
             os.remove(file)
         except Exception:
             pass
+
         
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    BOT_TOKEN = os.environ.get("BOT_TOKEN","")
-    updater = Updater(BOT_TOKEN, use_context=True)
+
+    # BOT_TOKEN = os.environ.get("BOT_TOKEN","")
+    # updater = Updater(BOT_TOKEN, use_context=True)
+    updater = Updater("1011780131:AAFbABXZDSS1WXu-ng7EZqR_ajKrVGGfJxo", use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
